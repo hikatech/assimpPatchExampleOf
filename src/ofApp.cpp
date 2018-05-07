@@ -26,7 +26,6 @@ void ofApp::setup(){
 	//load model
 	sibenik.setScaleNormalization(false);
 	sibenik.setScale(100, 100, 100);
-	//sibenik.loadModel("sibenik/sibenik.3DS", true);
 	sibenik.loadModel("sibenikOBJ/sibenik.obj", true);
 	sibenik.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 0);
 }
