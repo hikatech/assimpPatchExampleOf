@@ -1,7 +1,14 @@
 #pragma once
 
+#define ENABLE_FIXED_MODE //please comment out this line if you want to check default ofxAssimpModelLoader
+
 #include "ofMain.h"
+
+#ifdef ENABLE_FIXED_MODE
 #include "ofxAssimpModelLoaderFix.h"
+#else
+#include "ofxAssimpModelLoader.h"
+#endif
 
 class ofApp : public ofBaseApp{
 
@@ -23,5 +30,10 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
     protected:
+		
+#ifdef ENABLE_FIXED_MODE
 		ofxAssimpModelLoaderFix sibenik;
+#else
+		ofxAssimpModelLoader sibenik;
+#endif
 };
