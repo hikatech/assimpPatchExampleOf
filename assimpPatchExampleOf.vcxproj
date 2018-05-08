@@ -177,7 +177,6 @@
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpModelLoader.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpTexture.cpp" />
-    <ClCompile Include="src\ofMaterialFix.cpp" />
     <ClCompile Include="src\ofxAssimpModelLoaderFix.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -223,8 +222,6 @@
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\libs\assimp\include\assimp\vector2.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\libs\assimp\include\assimp\vector3.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\libs\assimp\include\assimp\version.h" />
-    <ClInclude Include="src\ofMaterialFix.h" />
-    <ClInclude Include="src\ofxAssimpMeshHelperFix.h" />
     <ClInclude Include="src\ofxAssimpModelLoaderFix.h" />
   </ItemGroup>
   <ItemGroup>

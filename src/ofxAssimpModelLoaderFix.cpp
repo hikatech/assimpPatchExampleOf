@@ -1,325 +1,3 @@
-//#include "ofxAssimpModelLoaderFix.h"
-//#include "ofxAssimpUtils.h"
-//
-//ofxAssimpMeshHelperFix & ofxAssimpModelLoaderFix::getMeshHelper(int meshIndex)
-//{
-//	meshIndex = ofClamp(meshIndex, 0, modelMeshes.size() - 1);
-//	return modelMeshes[meshIndex];
-//}
-//
-//void ofxAssimpModelLoaderFix::draw(ofPolyRenderMode renderType)
-//{
-//	if (scene == NULL) {
-//		return;
-//	}
-//
-//	ofPushStyle();
-//
-//	ofPushMatrix();
-//	ofMultMatrix(modelMatrix);
-//
-//#ifndef TARGET_OPENGLES
-//	glPolygonMode(GL_FRONT_AND_BACK, ofGetGLPolyMode(renderType));
-//#endif
-//
-//	for (unsigned int i = 0; i<modelMeshes.size(); i++) {
-//		ofxAssimpMeshHelperFix & mesh = modelMeshes[i];
-//
-//		ofPushMatrix();
-//		ofMultMatrix(mesh.matrix);
-//
-//		if (bUsingTextures) {
-//			if (mesh.hasTexture()) {
-//				mesh.getTextureRef().bind();
-//			}
-//		}
-//
-//		if (bUsingMaterials) {
-//			mesh.material.begin();
-//		}
-//
-//		if (mesh.twoSided) {
-//			glEnable(GL_CULL_FACE);
-//		}
-//		else {
-//			glDisable(GL_CULL_FACE);
-//		}
-//
-//		ofEnableBlendMode(mesh.blendMode);
-//
-//#ifndef TARGET_OPENGLES
-//		mesh.vbo.drawElements(GL_TRIANGLES, mesh.indices.size());
-//#else
-//		switch (renderType) {
-//		case OF_MESH_FILL:
-//			mesh.vbo.drawElements(GL_TRIANGLES, mesh.indices.size());
-//			break;
-//		case OF_MESH_WIREFRAME:
-//			//note this won't look the same as on non ES renderers.
-//			//there is no easy way to convert GL_TRIANGLES to outlines for each triangle
-//			mesh.vbo.drawElements(GL_LINES, mesh.indices.size());
-//			break;
-//		case OF_MESH_POINTS:
-//			mesh.vbo.drawElements(GL_POINTS, mesh.indices.size());
-//			break;
-//		}
-//#endif
-//
-//		if (bUsingTextures) {
-//			if (mesh.hasTexture()) {
-//				mesh.getTextureRef().unbind();
-//			}
-//		}
-//
-//		if (bUsingMaterials) {
-//			mesh.material.end();
-//		}
-//
-//		ofPopMatrix();
-//	}
-//
-//#ifndef TARGET_OPENGLES
-//	//set the drawing mode back to FILL if its drawn the model with a different mode.
-//	if (renderType != OF_MESH_FILL) {
-//		glPolygonMode(GL_FRONT_AND_BACK, ofGetGLPolyMode(OF_MESH_FILL));
-//	}
-//#endif
-//
-//	ofPopMatrix();
-//	ofPopStyle();
-//}
-//
-//void ofxAssimpModelLoaderFix::updateMeshes(aiNode * node, ofMatrix4x4 parentMatrix)
-//{
-//
-//	aiMatrix4x4 m = node->mTransformation;
-//	m.Transpose();
-//	ofMatrix4x4 matrix(m.a1, m.a2, m.a3, m.a4,
-//		m.b1, m.b2, m.b3, m.b4,
-//		m.c1, m.c2, m.c3, m.c4,
-//		m.d1, m.d2, m.d3, m.d4);
-//	matrix *= parentMatrix;
-//
-//	for (unsigned int i = 0; i<node->mNumMeshes; i++) {
-//		int meshIndex = node->mMeshes[i];
-//		ofxAssimpMeshHelperFix & mesh = modelMeshes[meshIndex];
-//		mesh.matrix = matrix;
-//	}
-//
-//	for (unsigned int i = 0; i<node->mNumChildren; i++) {
-//		updateMeshes(node->mChildren[i], matrix);
-//	}
-//}
-//
-//void ofxAssimpModelLoaderFix::loadGLResources()
-//{
-//
-//	ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResources(): starting";
-//
-//	// create new mesh helpers for each mesh, will populate their data later.
-//	modelMeshes.resize(scene->mNumMeshes, ofxAssimpMeshHelperFix());
-//
-//	// create OpenGL buffers and populate them based on each meshes pertinant info.
-//	for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
-//		ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResources(): loading mesh " << i;
-//		// current mesh we are introspecting
-//		aiMesh* mesh = scene->mMeshes[i];
-//
-//		// the current meshHelper we will be populating data into.
-//		ofxAssimpMeshHelperFix & meshHelper = modelMeshes[i];
-//		//ofxAssimpMeshHelperFix meshHelper;
-//
-//		//meshHelper.texture = NULL;
-//
-//		// Handle material info
-//		aiMaterial* mtl = scene->mMaterials[mesh->mMaterialIndex];
-//		aiColor4D dcolor, scolor, acolor, ecolor;
-//
-//		if (AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &dcolor)) {
-//			meshHelper.material.setDiffuseColor(aiColorToOfColor(dcolor));
-//		}
-//
-//		if (AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_SPECULAR, &scolor)) {
-//			meshHelper.material.setSpecularColor(aiColorToOfColor(scolor));
-//		}
-//
-//		if (AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_AMBIENT, &acolor)) {
-//			meshHelper.material.setAmbientColor(aiColorToOfColor(acolor));
-//		}
-//
-//		if (AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_EMISSIVE, &ecolor)) {
-//			meshHelper.material.setEmissiveColor(aiColorToOfColor(ecolor));
-//		}
-//
-//		float shininess;
-//		if (AI_SUCCESS == aiGetMaterialFloat(mtl, AI_MATKEY_SHININESS, &shininess)) {
-//			meshHelper.material.setShininess(shininess);
-//		}
-//
-//		int blendMode;
-//		if (AI_SUCCESS == aiGetMaterialInteger(mtl, AI_MATKEY_BLEND_FUNC, &blendMode)) {
-//			if (blendMode == aiBlendMode_Default) {
-//				meshHelper.blendMode = OF_BLENDMODE_ALPHA;
-//			}
-//			else {
-//				meshHelper.blendMode = OF_BLENDMODE_ADD;
-//			}
-//		}
-//
-//		// Culling
-//		unsigned int max = 1;
-//		int two_sided;
-//		if ((AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) && two_sided)
-//			meshHelper.twoSided = true;
-//		else
-//			meshHelper.twoSided = false;
-//
-//		// Load Textures
-//		int texIndex = 0;
-//		aiString texPath;
-//
-//		// TODO: handle other aiTextureTypes
-//		if (AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath)) {
-//			ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResource(): loading image from \"" << texPath.data << "\"";
-//			string modelFolder = file.getEnclosingDirectory();
-//			string relTexPath = ofFilePath::getEnclosingDirectory(texPath.data, false);
-//			string texFile = ofFilePath::getFileName(texPath.data);
-//			string realPath = ofFilePath::join(ofFilePath::join(modelFolder, relTexPath), texFile);
-//
-//			if (ofFile::doesFileExist(realPath) == false) {
-//				ofLogError("ofxAssimpModelLoaderFix") << "loadGLResource(): texture doesn't exist: \""
-//					<< file.getFileName() + "\" in \"" << realPath << "\"";
-//			}
-//
-//			ofxAssimpTexture assimpTexture;
-//			bool bTextureAlreadyExists = false;
-//			for (int j = 0; j<textures.size(); j++) {
-//				assimpTexture = textures[j];
-//				if (assimpTexture.getTexturePath() == realPath) {
-//					bTextureAlreadyExists = true;
-//					break;
-//				}
-//			}
-//			if (bTextureAlreadyExists) {
-//				meshHelper.assimpTexture = assimpTexture;
-//				ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResource(): texture already loaded: \""
-//					<< file.getFileName() + "\" from \"" << realPath << "\"";
-//			}
-//			else {
-//				ofTexture texture;
-//				bool bTextureLoadedOk = ofLoadImage(texture, realPath);
-//				if (bTextureLoadedOk) {
-//					textures.push_back(ofxAssimpTexture(texture, realPath));
-//					assimpTexture = textures.back();
-//					meshHelper.assimpTexture = assimpTexture;
-//					ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResource(): texture loaded, dimensions: "
-//						<< texture.getWidth() << "x" << texture.getHeight();
-//				}
-//				else {
-//					ofLogError("ofxAssimpModelLoaderFix") << "loadGLResource(): couldn't load texture: \""
-//						<< file.getFileName() + "\" from \"" << realPath << "\"";
-//				}
-//			}
-//		}
-//
-//		meshHelper.mesh = mesh;
-//		aiMeshToOfMesh(mesh, meshHelper.cachedMesh, &meshHelper);
-//		meshHelper.cachedMesh.setMode(OF_PRIMITIVE_TRIANGLES);
-//		meshHelper.validCache = true;
-//		meshHelper.hasChanged = false;
-//
-//		int numOfAnimations = scene->mNumAnimations;
-//		for (int i = 0; i<numOfAnimations; i++) {
-//			aiAnimation * animation = scene->mAnimations[i];
-//			animations.push_back(ofxAssimpAnimation(scene, animation));
-//		}
-//
-//		if (hasAnimations()) {
-//			meshHelper.animatedPos.resize(mesh->mNumVertices);
-//			if (mesh->HasNormals()) {
-//				meshHelper.animatedNorm.resize(mesh->mNumVertices);
-//			}
-//		}
-//
-//
-//		int usage;
-//		if (getAnimationCount()) {
-//#ifndef TARGET_OPENGLES
-//			if (!ofIsGLProgrammableRenderer()) {
-//				usage = GL_STATIC_DRAW;
-//			}
-//			else {
-//				usage = GL_STREAM_DRAW;
-//			}
-//#else
-//			usage = GL_DYNAMIC_DRAW;
-//#endif
-//		}
-//		else {
-//			usage = GL_STATIC_DRAW;
-//
-//		}
-//
-//		meshHelper.vbo.setVertexData(&mesh->mVertices[0].x, 3, mesh->mNumVertices, usage, sizeof(aiVector3D));
-//		if (mesh->HasVertexColors(0)) {
-//			meshHelper.vbo.setColorData(&mesh->mColors[0][0].r, mesh->mNumVertices, GL_STATIC_DRAW, sizeof(aiColor4D));
-//		}
-//		if (mesh->HasNormals()) {
-//			meshHelper.vbo.setNormalData(&mesh->mNormals[0].x, mesh->mNumVertices, usage, sizeof(aiVector3D));
-//		}
-//		if (meshHelper.cachedMesh.hasTexCoords()) {
-//			meshHelper.vbo.setTexCoordData(meshHelper.cachedMesh.getTexCoordsPointer()[0].getPtr(), mesh->mNumVertices, GL_STATIC_DRAW, sizeof(ofVec2f));
-//		}
-//
-//		meshHelper.indices.resize(mesh->mNumFaces * 3);
-//		int j = 0;
-//		for (unsigned int x = 0; x < mesh->mNumFaces; ++x) {
-//			for (unsigned int a = 0; a < mesh->mFaces[x].mNumIndices; ++a) {
-//				meshHelper.indices[j++] = mesh->mFaces[x].mIndices[a];
-//			}
-//		}
-//
-//		meshHelper.vbo.setIndexData(&meshHelper.indices[0], meshHelper.indices.size(), GL_STATIC_DRAW);
-//
-//		//modelMeshes.push_back(meshHelper);
-//	}
-//
-//
-//
-//	ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResource(): finished";
-//}
-//
-//void ofxAssimpModelLoaderFix::getBoundingBoxForNode(const ofxAssimpMeshHelperFix & mesh, aiVector3D * min, aiVector3D * max)
-//{
-//	if (!hasAnimations()) {
-//		for (size_t i = 0; i<mesh.mesh->mNumVertices; i++) {
-//			auto vertex = mesh.mesh->mVertices[i];
-//			auto tmp = ofVec3f(vertex.x, vertex.y, vertex.z) * mesh.matrix;
-//
-//			min->x = MIN(min->x, tmp.x);
-//			min->y = MIN(min->y, tmp.y);
-//			min->z = MIN(min->z, tmp.z);
-//
-//			max->x = MAX(max->x, tmp.x);
-//			max->y = MAX(max->y, tmp.y);
-//			max->z = MAX(max->z, tmp.z);
-//		}
-//	}
-//	else {
-//		for (auto & animPos : mesh.animatedPos) {
-//			auto tmp = ofVec3f(animPos.x, animPos.y, animPos.z) * mesh.matrix;
-//
-//			min->x = MIN(min->x, tmp.x);
-//			min->y = MIN(min->y, tmp.y);
-//			min->z = MIN(min->z, tmp.z);
-//
-//			max->x = MAX(max->x, tmp.x);
-//			max->y = MAX(max->y, tmp.y);
-//			max->z = MAX(max->z, tmp.z);
-//		}
-//	}
-//}
-
 #include "ofxAssimpModelLoaderFix.h"
 #include "ofxAssimpUtils.h"
 
@@ -502,7 +180,7 @@ void ofxAssimpModelLoaderFix::loadGLResources() {
 	ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResources(): starting";
 
 	// create new mesh helpers for each mesh, will populate their data later.
-	modelMeshes.resize(scene->mNumMeshes, ofxAssimpMeshHelperFix());
+	modelMeshes.resize(scene->mNumMeshes, ofxAssimpMeshHelper());
 
 	// create OpenGL buffers and populate them based on each meshes pertinant info.
 	for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
@@ -511,7 +189,7 @@ void ofxAssimpModelLoaderFix::loadGLResources() {
 		aiMesh* mesh = scene->mMeshes[i];
 
 		// the current meshHelper we will be populating data into.
-		ofxAssimpMeshHelperFix & meshHelper = modelMeshes[i];
+		ofxAssimpMeshHelper & meshHelper = modelMeshes[i];
 		//ofxAssimpMeshHelperFix meshHelper;
 
 		//meshHelper.texture = NULL;
@@ -562,9 +240,9 @@ void ofxAssimpModelLoaderFix::loadGLResources() {
 		// Load Textures
 		int texIndex = 0;
 		aiString texPath;
-
 		// TODO: handle other aiTextureTypes
-		if (AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath)) {
+		aiTextureMapMode mapMode;// added
+		if (AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath, 0, 0, 0, 0, &mapMode)) { // modified but mapMode returned garbage value...
 			ofLogVerbose("ofxAssimpModelLoaderFix") << "loadGLResource(): loading image from \"" << texPath.data << "\"";
 			string modelFolder = file.getEnclosingDirectory();
 			string relTexPath = ofFilePath::getEnclosingDirectory(texPath.data, false);
@@ -592,6 +270,26 @@ void ofxAssimpModelLoaderFix::loadGLResources() {
 			}
 			else {
 				ofTexture texture;
+				
+				//set wrapmode (added part begin)
+				GLint wrapMode = GL_REPEAT;
+				switch (mapMode) {
+				case aiTextureMapMode_Wrap:
+					wrapMode = GL_REPEAT;
+					break;
+				case aiTextureMapMode_Clamp:
+					wrapMode = GL_CLAMP_TO_EDGE;
+					break;
+				case aiTextureMapMode_Decal:
+					wrapMode = GL_CLAMP_TO_BORDER;
+					break;
+				case aiTextureMapMode_Mirror:
+					wrapMode = GL_MIRRORED_REPEAT;
+					break;
+				}
+				texture.setTextureWrap(wrapMode, wrapMode);
+				// (added part end)
+
 				bool bTextureLoadedOk = ofLoadImage(texture, realPath);
 				if (bTextureLoadedOk) {
 					textures.push_back(ofxAssimpTexture(texture, realPath));
@@ -732,7 +430,7 @@ void ofxAssimpModelLoaderFix::updateMeshes(aiNode * node, ofMatrix4x4 parentMatr
 
 	for (unsigned int i = 0; i<node->mNumMeshes; i++) {
 		int meshIndex = node->mMeshes[i];
-		ofxAssimpMeshHelperFix & mesh = modelMeshes[meshIndex];
+		ofxAssimpMeshHelper & mesh = modelMeshes[meshIndex];
 		mesh.matrix = matrix;
 	}
 
@@ -932,7 +630,7 @@ unsigned int ofxAssimpModelLoaderFix::getMeshCount() {
 	return modelMeshes.size();
 }
 
-ofxAssimpMeshHelperFix & ofxAssimpModelLoaderFix::getMeshHelper(int meshIndex) {
+ofxAssimpMeshHelper & ofxAssimpModelLoaderFix::getMeshHelper(int meshIndex) {
 	meshIndex = ofClamp(meshIndex, 0, modelMeshes.size() - 1);
 	return modelMeshes[meshIndex];
 }
@@ -952,7 +650,7 @@ void ofxAssimpModelLoaderFix::getBoundingBoxWithMinVector(aiVector3D* min, aiVec
 }
 
 //-------------------------------------------
-void ofxAssimpModelLoaderFix::getBoundingBoxForNode(const ofxAssimpMeshHelperFix & mesh, aiVector3D* min, aiVector3D* max) {
+void ofxAssimpModelLoaderFix::getBoundingBoxForNode(const ofxAssimpMeshHelper & mesh, aiVector3D* min, aiVector3D* max) {
 	if (!hasAnimations()) {
 		for (size_t i = 0; i<mesh.mesh->mNumVertices; i++) {
 			auto vertex = mesh.mesh->mVertices[i];
@@ -1057,7 +755,7 @@ void ofxAssimpModelLoaderFix::draw(ofPolyRenderMode renderType) {
 #endif
 
 	for (unsigned int i = 0; i<modelMeshes.size(); i++) {
-		ofxAssimpMeshHelperFix & mesh = modelMeshes[i];
+		ofxAssimpMeshHelper & mesh = modelMeshes[i];
 
 		ofPushMatrix();
 		ofMultMatrix(mesh.matrix);
@@ -1212,22 +910,22 @@ ofMesh ofxAssimpModelLoaderFix::getCurrentAnimatedMesh(int num) {
 }
 
 //-------------------------------------------
-ofMaterialFix ofxAssimpModelLoaderFix::getMaterialForMesh(string name) {
+ofMaterial ofxAssimpModelLoaderFix::getMaterialForMesh(string name) {
 	for (int i = 0; i<(int)modelMeshes.size(); i++) {
 		if (string(modelMeshes[i].mesh->mName.data) == name) {
 			return modelMeshes[i].material;
 		}
 	}
 	ofLogError("ofxAssimpModelLoaderFix") << "getMaterialForMesh(): couldn't find mesh: \"" + name << "\"";
-	return ofMaterialFix();
+	return ofMaterial();
 }
 
 //-------------------------------------------
-ofMaterialFix ofxAssimpModelLoaderFix::getMaterialForMesh(int num) {
+ofMaterial ofxAssimpModelLoaderFix::getMaterialForMesh(int num) {
 	if ((int)modelMeshes.size() <= num) {
 		ofLogError("ofxAssimpModelLoaderFix") << "getMaterialForMesh(): mesh id: " << num
 			<< "out of range for total num meshes: " << scene->mNumMeshes;
-		return ofMaterialFix();
+		return ofMaterial();
 	}
 	return modelMeshes[num].material;
 }

@@ -25,9 +25,6 @@
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpTexture.cpp">
       <Filter>addons\ofxAssimpModelLoader\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\ofMaterialFix.cpp">
-      <Filter>src\ofxAssimpModelLoaderFix</Filter>
-    </ClCompile>
     <ClCompile Include="src\ofxAssimpModelLoaderFix.cpp">
       <Filter>src\ofxAssimpModelLoaderFix</Filter>
     </ClCompile>
@@ -193,12 +190,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\libs\assimp\include\assimp\version.h">
       <Filter>addons\ofxAssimpModelLoader\libs\assimp\include\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ofMaterialFix.h">
-      <Filter>src\ofxAssimpModelLoaderFix</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ofxAssimpMeshHelperFix.h">
-      <Filter>src\ofxAssimpModelLoaderFix</Filter>
     </ClInclude>
     <ClInclude Include="src\ofxAssimpModelLoaderFix.h">
       <Filter>src\ofxAssimpModelLoaderFix</Filter>
