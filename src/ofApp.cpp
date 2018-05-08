@@ -4,6 +4,7 @@ vector<ofLight> lights;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	ofDisableArbTex();// for enabling the effect of "ofTexture::setTextureWrap()"
 
 	//light stuff
 	ofEnableDepthTest();

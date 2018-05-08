@@ -1,23 +1,8 @@
 #pragma once
-//#include "ofxAssimpModelLoader.h"
 #include "ofMain.h"
-#include "ofxAssimpMeshHelperFix.h"
+#include "ofxAssimpMeshHelper.h"
 #include "ofxAssimpAnimation.h"
 #include "ofxAssimpTexture.h"
-
-//class ofxAssimpModelLoaderFix: public ofxAssimpModelLoader{
-//public: 
-//	ofxAssimpMeshHelperFix & getMeshHelper(int meshIndex);
-//	void draw(ofPolyRenderMode renderType);
-//
-//protected:
-//	void updateMeshes(aiNode * node, ofMatrix4x4 parentMatrix);
-//	// Initial VBO creation, etc
-//	void loadGLResources();
-//	void getBoundingBoxForNode(const ofxAssimpMeshHelperFix & mesh, aiVector3D* min, aiVector3D* max);
-//	vector<ofxAssimpMeshHelperFix> modelMeshes;
-//
-//};
 
 class ofxAssimpModelLoaderFix {
 
@@ -49,7 +34,7 @@ public:
 
 	bool hasMeshes();
 	unsigned int getMeshCount();
-	ofxAssimpMeshHelperFix & getMeshHelper(int meshIndex);
+	ofxAssimpMeshHelper & getMeshHelper(int meshIndex);
 
 	void clear();
 
@@ -70,8 +55,8 @@ public:
 	ofMesh getCurrentAnimatedMesh(string name);
 	ofMesh getCurrentAnimatedMesh(int num);
 
-	ofMaterialFix getMaterialForMesh(string name);
-	ofMaterialFix getMaterialForMesh(int num);
+	ofMaterial getMaterialForMesh(string name);
+	ofMaterial getMaterialForMesh(int num);
 
 	ofTexture getTextureForMesh(string name);
 	ofTexture getTextureForMesh(int num);
@@ -126,7 +111,7 @@ protected:
 	void updateGLResources();
 
 	void getBoundingBoxWithMinVector(aiVector3D* min, aiVector3D* max);
-	void getBoundingBoxForNode(const ofxAssimpMeshHelperFix & mesh, aiVector3D* min, aiVector3D* max);
+	void getBoundingBoxForNode(const ofxAssimpMeshHelper & mesh, aiVector3D* min, aiVector3D* max);
 
 	ofFile file;
 
@@ -143,7 +128,7 @@ protected:
 
 	vector<ofLight> lights;
 	vector<ofxAssimpTexture> textures;
-	vector<ofxAssimpMeshHelperFix> modelMeshes;
+	vector<ofxAssimpMeshHelper> modelMeshes;
 	vector<ofxAssimpAnimation> animations;
 	int currentAnimation; // DEPRECATED - to be removed with deprecated animation functions.
 
